@@ -1,6 +1,12 @@
 from pathlib import Path
 import environ
 import logging
+import logging.config
+from django.utils.log import DEFAULT_LOGGING
+
+
+# Initialize logger
+logger = logging.getLogger(__name__)
 
 # Initialize environment variables
 env = environ.Env()
@@ -148,24 +154,54 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_URLS_REGEX = r"^api/.*$"
 
+LOG_LEVEL = "INFO"
 
-LOGGING = {
+logging.config.dictConfig({
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "verbose": {
-            "format": "%(levelname)s %(name)-12s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
-        }
+        "console": {
+            "format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"
+        },
+        "file": {
+            "format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"
+        },
+        "django_server": {
+            "format": "%(asctime)s %(levelname)-8s %(message)s"
+        },
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",
             "class": "logging.StreamHandler",
-            "formatter": "verbose",
-        }
+            "formatter": "console",
+        },
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "formatter": "file",
+            "filename": BASE_DIR / "logs/django.log",
+        },
+        "django.server": {
+            "class": "logging.StreamHandler",
+            "formatter": "django_server",
+            "level": "INFO",
+        },
     },
-    "root": {
-        "level": "INFO",
-        "handlers": ["console"]
+    "loggers": {
+        "": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "apps": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "django.server": {
+            "handlers": ["django.server"],
+            "level": "INFO",
+            "propagate": False,
+        },
     },
-}
+})
