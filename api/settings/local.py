@@ -5,6 +5,8 @@ from .base import env
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-p^5i#=^dl1((g66n-a0t#sfi!%^pm^l+!3x*uohqur0e0jf8l6"
+SECRET_KEY = env("DJANGO_SECRET_KEY", default="lL_F2sBAlqhHepdaYZkgtyrTwA5dkDpaUuSwcQfqyl968CvB0rc",)
+
 DEBUG = True
-ALLOWED_HOSTS = []
+
+CSRF_TRUSTED_ORIGINS = ["http://localhost:8080"]
